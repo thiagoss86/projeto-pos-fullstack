@@ -1,8 +1,9 @@
 package com.acme.cars.security;
 
-import com.acme.cars.service.RevokedTokenService;
-import com.acme.cars.service.TokenService;
+import com.acme.cars.service.impl.TokenRevogadoServiceImpl;
+import com.acme.cars.service.impl.TokenServiceImpl;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,20 +22,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenService tokenService;
-    private final RevokedTokenService revokedTokenService;
+    private final TokenServiceImpl tokenServiceImpl;
+    private final TokenRevogadoServiceImpl tokenRevogadoServiceImpl;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain filterChain)
             throws ServletException, IOException {
 
         String auth = request.getHeader("Authorization");
         if (auth != null && auth.startsWith("Bearer")) {
             try {
-                DecodedJWT jwt = tokenService.isValid(auth);
-                String jti = tokenService.getJti(jwt);
-                if (!revokedTokenService.isRevoked(jti)) {
-                    String userId = tokenService.getUsuario(jwt);
+                DecodedJWT jwt = tokenServiceImpl.isValid(auth);
+                String jti = tokenServiceImpl.getJti(jwt);
+                if (!tokenRevogadoServiceImpl.isRevogado(jti)) {
+                    String userId = tokenServiceImpl.getUsuario(jwt);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userId,
                             null,

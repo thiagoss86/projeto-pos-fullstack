@@ -1,4 +1,4 @@
-package com.acme.cars.payload;
+package com.acme.cars.dto.requests;
 
 public record AuthPayload(String token) {
 }

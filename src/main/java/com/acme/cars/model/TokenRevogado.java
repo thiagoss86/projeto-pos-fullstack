@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 
 @Entity
-@Table(name = "revoked_token")
+@Table(name = "token_revogado")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RevokedToken {
+public class TokenRevogado {
     @Id
     private String jti;
     private Instant expiresAt;
