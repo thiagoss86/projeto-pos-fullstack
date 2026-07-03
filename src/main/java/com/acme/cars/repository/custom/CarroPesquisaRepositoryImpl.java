@@ -2,6 +2,7 @@ package com.acme.cars.repository.custom;
 
 import com.acme.cars.dto.requests.BuscarCarroRequest;
 import com.acme.cars.model.Carro;
+import com.acme.cars.repository.custom.pesquisa.FiltroPesquisa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -33,5 +34,15 @@ public class CarroPesquisaRepositoryImpl implements CarroPesquisaRepository {
         cq.where(predicates.toArray(Predicate[]::new));
 
         return em.createQuery(cq).getResultList();
+    }
+
+    private Predicate criarPredicateLike(
+            CriteriaBuilder criteriaBuilder,
+            Root<Carro> root,
+            FiltroPesquisa filtroPesquisa) {
+
+        return criteriaBuilder.like(
+                criteriaBuilder.lower(root.get(filtroPesquisa.campo())),
+                "%" + filtroPesquisa.valor().toLowerCase() + "%");
     }
 }
