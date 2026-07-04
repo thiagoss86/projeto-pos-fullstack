@@ -13,17 +13,17 @@ public class AdaptadorVeiculoLegadoImpl implements AdaptadorVeiculoLegado {
 
         Carro carro = new Carro();
 
-        carro.setModelo(legado.getCarModel());
+        carro.setModelo(legado.carModel());
 
-        carro.setFabricante(legado.getCarModel());
+        carro.setFabricante(legado.maker());
 
-        carro.setAno(legado.getManufactureYeah());
+        carro.setAno(legado.manufactureYeah());
 
-        carro.setCor(legado.getPaint());
+        carro.setCor(legado.paint());
 
-        carro.setPais(legado.getOriginCountry());
+        carro.setPais(legado.originCountry());
 
-        carro.setCavalosDePotencia(legado.getHorsePower());
+        carro.setCavalosDePotencia(legado.horsePower());
 
         return carro;
 
