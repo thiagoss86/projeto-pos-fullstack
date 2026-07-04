@@ -1,9 +1,11 @@
 package com.acme.cars.exportacao;
 
+import com.acme.cars.exception.ExportadorNaoEncontradoException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,10 +16,17 @@ public class FabricaExportador {
 
     public FabricaExportador(List<ExportadorArquivo> listaExportadores) {
 
-        exportadores =
+        this.exportadores =
                 listaExportadores.stream()
                         .collect(Collectors.toUnmodifiableMap(
-                                ExportadorArquivo::getTipo,
+                                ExportadorArquivo::tipo,
                                 Function.identity()));
+    }
+
+    public ExportadorArquivo obter(TipoExportacao tipoExportacao) {
+
+        return Optional.ofNullable(exportadores.get(tipoExportacao))
+                .orElseThrow(() -> new ExportadorNaoEncontradoException(tipoExportacao));
+
     }
 }

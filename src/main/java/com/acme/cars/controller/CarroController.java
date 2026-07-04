@@ -1,17 +1,19 @@
 package com.acme.cars.controller;
 
+import com.acme.cars.dto.ArquivoExportado;
 import com.acme.cars.dto.requests.BuscarCarroRequest;
+import com.acme.cars.exportacao.TipoExportacao;
 import com.acme.cars.model.Carro;
 import com.acme.cars.service.CarroService;
+import com.acme.cars.service.ExportacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarroController {
     private final CarroService carroServiceImpl;
-    private final CsvService csvServiceImpl;
+    private final ExportacaoService exportacaoService;
 
 
     @GetMapping("/search")
@@ -37,6 +39,7 @@ public class CarroController {
         List<Carro> search = carroServiceImpl.buscar(buscarCarroRequest);
         return ResponseEntity.ok(search);
     }
+
     @GetMapping
     public ResponseEntity<List<Carro>> listarTodos(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -46,6 +49,7 @@ public class CarroController {
         List<Carro> allCarros = carroServiceImpl.buscarTodosPaginado(page, size);
         return ResponseEntity.ok().headers(headers).body(allCarros);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Carro> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(carroServiceImpl.buscarPorId(id));
@@ -67,14 +71,22 @@ public class CarroController {
         carroServiceImpl.deletar(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/export-cars")
-    public ResponseEntity<FileSystemResource> exportCharacters() {
-        String filePath = "carros.csv";
-        csvServiceImpl.gerarArquivo(filePath);
-        File file = new File(filePath);
-        FileSystemResource fileSystemResource = new FileSystemResource(file);
+
+    @GetMapping("exportar/{tipo}")
+    public ResponseEntity<ByteArrayResource> exportarCarros(
+            @PathVariable TipoExportacao tipo) {
+
+        ArquivoExportado arquivo = exportacaoService.exportar(TipoExportacao.CSV);
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=" + file.getName())
-                .body(fileSystemResource);
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=" + arquivo.nomeArquivo())
+                .contentLength(arquivo.conteudo().length)
+                .contentType(arquivo.mediaType())
+                .body(
+                        new ByteArrayResource(arquivo.conteudo())
+                );
+
     }
 }

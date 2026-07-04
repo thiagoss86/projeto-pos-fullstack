@@ -1,5 +1,6 @@
 package com.acme.cars.exception;
 
+import com.acme.cars.exportacao.TipoExportacao;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -43,6 +45,17 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Dados inválidos", req, details);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+
+        if (ex.getRequiredType() == TipoExportacao.class) {
+
+            return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req, null);
+        }
+
+        throw ex;
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraint(ConstraintViolationException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, "Dados inválidos", req, Map.of("violations", ex.getMessage()));
@@ -56,6 +69,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno", req, Map.of("exception", ex.getClass().getSimpleName()));
+    }
+
+    @ExceptionHandler(ExportadorNaoEncontradoException.class)
+    public ResponseEntity<ApiError> handleExportadorNaoEncontrado(Exception ex, HttpServletRequest req) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), req, null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest req, Map<String, Object> details) {

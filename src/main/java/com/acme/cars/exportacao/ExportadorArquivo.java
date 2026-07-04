@@ -1,15 +1,14 @@
 package com.acme.cars.exportacao;
 
+import com.acme.cars.dto.ArquivoExportado;
 import com.acme.cars.model.Carro;
 
 import java.util.List;
 
 public interface ExportadorArquivo {
 
-    TipoExportacao getTipo();
+    TipoExportacao tipo();
 
-    void exportar(
-            List<Carro> carros,
-            String caminhoArquivo);
+    ArquivoExportado exportar(List<Carro> carros);
 
 }
