@@ -76,7 +76,7 @@ public class CarroController {
     public ResponseEntity<ByteArrayResource> exportarCarros(
             @PathVariable TipoExportacao tipo) {
 
-        ArquivoExportado arquivo = exportacaoService.exportar(TipoExportacao.CSV);
+        ArquivoExportado arquivo = exportacaoService.exportar(tipo);
 
         return ResponseEntity.ok()
                 .header(
