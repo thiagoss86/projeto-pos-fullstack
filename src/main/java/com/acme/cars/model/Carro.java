@@ -12,7 +12,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "carro")
-@Data@AllArgsConstructor@NoArgsConstructor@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Carro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,11 +1,13 @@
 package com.acme.cars.controller;
 
+import com.acme.cars.adaptador.VeiculoLegado;
 import com.acme.cars.dto.ArquivoExportado;
 import com.acme.cars.dto.requests.BuscarCarroRequest;
 import com.acme.cars.exportacao.TipoExportacao;
 import com.acme.cars.model.Carro;
 import com.acme.cars.service.CarroService;
 import com.acme.cars.service.ExportacaoService;
+import com.acme.cars.service.impl.ImportacaoVeiculoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,8 +23,10 @@ import java.util.Optional;
 @RequestMapping("/api/carros")
 @RequiredArgsConstructor
 public class CarroController {
+
     private final CarroService carroServiceImpl;
     private final ExportacaoService exportacaoService;
+    private final ImportacaoVeiculoService importacaoVeiculoServiceImpl;
 
 
     @GetMapping("/search")
@@ -88,5 +92,22 @@ public class CarroController {
                         new ByteArrayResource(arquivo.conteudo())
                 );
 
+    }
+
+    @PostMapping("/importar")
+    public ResponseEntity<Carro> importar() {
+
+        VeiculoLegado legado =
+                new VeiculoLegado(
+                        "Civic",
+                        "Honda",
+                        180,
+                        2023,
+                        "Preto",
+                        "Japão");
+
+        Carro carroSalvo = importacaoVeiculoServiceImpl.importar(legado);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(carroSalvo);
     }
 }

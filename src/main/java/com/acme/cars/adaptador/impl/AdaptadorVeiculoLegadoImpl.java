@@ -1,12 +1,12 @@
 package com.acme.cars.adaptador.impl;
 
-import com.acme.cars.adaptador.AdaptadorVeiculo;
+import com.acme.cars.adaptador.AdaptadorVeiculoLegado;
 import com.acme.cars.adaptador.VeiculoLegado;
 import com.acme.cars.model.Carro;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AdaptadorVeiculoImpl implements AdaptadorVeiculo {
+public class AdaptadorVeiculoLegadoImpl implements AdaptadorVeiculoLegado {
 
     @Override
     public Carro adaptar(VeiculoLegado legado) {
