@@ -4,12 +4,13 @@ import com.acme.cars.adaptador.AdaptadorVeiculoLegado;
 import com.acme.cars.adaptador.VeiculoLegado;
 import com.acme.cars.model.Carro;
 import com.acme.cars.service.CarroService;
+import com.acme.cars.service.ImportacaoVeiculoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ImportacaoVeiculoService {
+public class ImportacaoVeiculoServiceImpl implements ImportacaoVeiculoService {
 
     private final AdaptadorVeiculoLegado adaptadorVeiculoLegado;
 

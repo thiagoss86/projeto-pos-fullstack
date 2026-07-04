@@ -7,7 +7,7 @@ import com.acme.cars.exportacao.TipoExportacao;
 import com.acme.cars.model.Carro;
 import com.acme.cars.service.CarroService;
 import com.acme.cars.service.ExportacaoService;
-import com.acme.cars.service.impl.ImportacaoVeiculoService;
+import com.acme.cars.service.ImportacaoVeiculoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -24,9 +24,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarroController {
 
-    private final CarroService carroServiceImpl;
+    private final CarroService carroService;
     private final ExportacaoService exportacaoService;
-    private final ImportacaoVeiculoService importacaoVeiculoServiceImpl;
+    private final ImportacaoVeiculoService importacaoVeiculoService;
 
 
     @GetMapping("/search")
@@ -40,7 +40,7 @@ public class CarroController {
                 Optional.ofNullable(fabricante),
                 Optional.ofNullable(pais));
 
-        List<Carro> search = carroServiceImpl.buscar(buscarCarroRequest);
+        List<Carro> search = carroService.buscar(buscarCarroRequest);
         return ResponseEntity.ok(search);
     }
 
@@ -48,35 +48,50 @@ public class CarroController {
     public ResponseEntity<List<Carro>> listarTodos(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Total-Count", String.valueOf(carroServiceImpl.count()));
-        List<Carro> allCarros = carroServiceImpl.buscarTodosPaginado(page, size);
-        return ResponseEntity.ok().headers(headers).body(allCarros);
+
+        headers.add("X-Total-Count", String.valueOf(carroService.count()));
+
+        List<Carro> carros = carroService.buscarTodosPaginado(page, size);
+
+        return ResponseEntity.ok().headers(headers).body(carros);
+
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Carro> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(carroServiceImpl.buscarPorId(id));
+
+        return ResponseEntity.ok(carroService.buscarPorId(id));
+
     }
 
     @PostMapping
     public ResponseEntity<Carro> salvar(@Valid @RequestBody Carro carro) {
-        Carro carroSalvo = carroServiceImpl.salvar(carro);
+
+        Carro carroSalvo = carroService.salvar(carro);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(carroSalvo);
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Carro> atualizar(@PathVariable Long id, @Valid @RequestBody Carro carroAtualizado) {
-        return ResponseEntity.ok(carroServiceImpl.atualizar(id, carroAtualizado));
+
+        return ResponseEntity.ok(carroService.atualizar(id, carroAtualizado));
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        carroServiceImpl.deletar(id);
+
+        carroService.deletar(id);
+
         return ResponseEntity.noContent().build();
+
     }
 
-    @GetMapping("exportar/{tipo}")
+    @GetMapping("/exportar/{tipo}")
     public ResponseEntity<ByteArrayResource> exportarCarros(
             @PathVariable TipoExportacao tipo) {
 
@@ -95,19 +110,11 @@ public class CarroController {
     }
 
     @PostMapping("/importar")
-    public ResponseEntity<Carro> importar() {
+    public ResponseEntity<Carro> importar(@RequestBody VeiculoLegado legado) {
 
-        VeiculoLegado legado =
-                new VeiculoLegado(
-                        "Civic",
-                        "Honda",
-                        180,
-                        2023,
-                        "Preto",
-                        "Japão");
-
-        Carro carroSalvo = importacaoVeiculoServiceImpl.importar(legado);
+        Carro carroSalvo = importacaoVeiculoService.importar(legado);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(carroSalvo);
+
     }
 }
