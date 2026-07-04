@@ -3,6 +3,7 @@ package com.acme.cars.service.impl;
 import com.acme.cars.dto.requests.BuscarCarroRequest;
 import com.acme.cars.exception.RecursoNaoEncontradoException;
 import com.acme.cars.model.Carro;
+import com.acme.cars.observador.ObservadorCadastroCarro;
 import com.acme.cars.repository.CarroRepository;
 import com.acme.cars.service.CarroService;
 import com.acme.cars.service.PesquisaCarroService;
@@ -18,6 +19,7 @@ public class CarroServiceImpl implements CarroService {
 
     private final CarroRepository carroRepository;
     private final PesquisaCarroService pesquisaCarroService;
+    private final List<ObservadorCadastroCarro> observadores;
 
     @Override
     public Carro buscarPorId(Long id) {
@@ -29,7 +31,14 @@ public class CarroServiceImpl implements CarroService {
 
     @Override
     public Carro salvar(Carro carro) {
-        return carroRepository.save(carro);
+
+        Carro carroSalvo = carroRepository.save(carro);
+
+        observadores.forEach(observador -> {
+            observador.carroCadastrado(carroSalvo);
+        });
+
+        return carroSalvo;
     }
 
     @Override
