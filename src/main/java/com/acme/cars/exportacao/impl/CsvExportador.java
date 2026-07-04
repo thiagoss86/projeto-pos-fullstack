@@ -1,29 +1,27 @@
-package com.acme.cars.service.impl;
+package com.acme.cars.exportacao.impl;
 
+import com.acme.cars.exportacao.ExportadorArquivo;
+import com.acme.cars.exportacao.TipoExportacao;
 import com.acme.cars.model.Carro;
-import com.acme.cars.service.CsvService;
 import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class CsvServiceImpl implements CsvService {
-    private final CarroServiceImpl carroServiceImpl;
+public class CsvExportador implements ExportadorArquivo {
 
     @Override
-    public void gerarArquivo(String filepath) {
+    public void exportar(List<Carro> carros, String caminhoArquivo) {
 
-        List<Carro> all = carroServiceImpl.listarTodos();
-
-        try (CSVWriter writer = new CSVWriter(new FileWriter(filepath))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(caminhoArquivo))) {
             writer.writeNext(new String[]{"ID", "MODELO", "ANO", "COR", "HP", "FABRICANTE", "PAIS"});
 
-            for (Carro carro : all) {
+            for (Carro carro : carros) {
                 writer.writeNext(new String[]{
                         String.valueOf(carro.getId()),
                         carro.getModelo(),
@@ -38,5 +36,10 @@ public class CsvServiceImpl implements CsvService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public TipoExportacao getTipo() {
+        return null;
     }
 }
