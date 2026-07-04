@@ -1,4 +1,4 @@
-package com.acme.cars.repository.custom.pesquisa.strategy;
+package com.acme.cars.repository.custom.pesquisa.estrategias;
 
 import com.acme.cars.constant.CamposCarro;
 import com.acme.cars.dto.requests.BuscarCarroRequest;
@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class PesquisaModeloStrategy implements EstrategiaPesquisaCarro {
+public class PesquisaFabricanteStrategy implements EstrategiaPesquisaCarro {
 
     @Override
-    public Optional<FiltroPesquisa> criarFiltro(BuscarCarroRequest buscarCarroRequest) {
+    public Optional<FiltroPesquisa> aplicarFiltro(BuscarCarroRequest buscarCarroRequest) {
 
         return buscarCarroRequest.modelo()
                 .map(modelo ->
                         new FiltroPesquisa(
-                                CamposCarro.MOLEDO,
+                                CamposCarro.FABRICANTE,
                                 modelo
                         ));
 

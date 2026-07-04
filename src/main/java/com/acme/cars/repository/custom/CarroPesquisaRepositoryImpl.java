@@ -3,7 +3,7 @@ package com.acme.cars.repository.custom;
 import com.acme.cars.dto.requests.BuscarCarroRequest;
 import com.acme.cars.model.Carro;
 import com.acme.cars.repository.custom.pesquisa.FiltroPesquisa;
-import com.acme.cars.repository.custom.pesquisa.strategy.EstrategiaPesquisaCarro;
+import com.acme.cars.repository.custom.pesquisa.estrategias.EstrategiaPesquisaCarro;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -34,7 +34,7 @@ public class CarroPesquisaRepositoryImpl implements CarroPesquisaRepository {
 
         List<Predicate> predicates = estrategias.stream()
                 .map(estrategia ->
-                        estrategia.criarFiltro(request))
+                        estrategia.aplicarFiltro(request))
                 .flatMap(Optional::stream)
                 .map(filtro -> criarPredicateLike(cb, carro, filtro))
                 .toList();
